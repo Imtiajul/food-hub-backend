@@ -1,5 +1,6 @@
 import { Response, Request } from "express";
 import { providerService } from "./provider.service";
+import { UserRole } from "../../../prisma/generated/prisma/enums";
 
 
 const addProvider = async (req: Request, res: Response) => {
@@ -26,6 +27,7 @@ const getProviders = async (req: Request, res: Response) => {
         })
     }
 }
+
 const createMeal = async (req: Request, res: Response) => {
     try {
         const result = await providerService.createMeal(req.body, req.user?.id as string);
@@ -50,8 +52,34 @@ const createCategory = async (req: Request, res: Response) => {
         })
     }
 }
+const getCategory = async (req: Request, res: Response) => {
+    try {
+        const result = await providerService.getCategory();
+        res.status(201).json({ result });
 
+    } catch (error: any) {
+        res.status(400).json({
+            error: "Fetching Category Failed",
+            details: error
+        })
+    }
+}
+const updateCategory = async (req: Request, res: Response) => {
+    try {
+        const isAdmin = req.user?.role === UserRole.ADMIN;
+        const isProvider = req.user?.role === UserRole.PROVIDER;
+        const { categoryId } = req.params;
+        const result = await providerService.updateCategory(categoryId as string, req.body, isProvider, isAdmin);
+        res.status(201).json({ result });
+
+    } catch (error: any) {
+        res.status(400).json({
+            error: "Updating Category Failed",
+            details: error
+        })
+    }
+}
 
 export const providerController = {
-    createMeal, addProvider, createCategory, getProviders,
+    createMeal, addProvider, createCategory, getProviders, getCategory, updateCategory, 
 }
