@@ -27,7 +27,19 @@ const getProviders = async (req: Request, res: Response) => {
         })
     }
 }
+const getProviderById = async (req: Request, res: Response) => {
+    try {
+        const {providerId} = req.params;
+        const result = await providerService.getProviderById(providerId as string);
+        res.status(201).json({ result });
 
+    } catch (error: any) {
+        res.status(400).json({
+            error: "Fetching Provider Item Failed",
+            details: error
+        })
+    }
+}
 const createMeal = async (req: Request, res: Response) => {
     try {
         const result = await providerService.createMeal(req.body, req.user?.id as string);
@@ -81,5 +93,5 @@ const updateCategory = async (req: Request, res: Response) => {
 }
 
 export const providerController = {
-    createMeal, addProvider, createCategory, getProviders, getCategory, updateCategory, 
+    createMeal, addProvider, createCategory, getProviders, getCategory, updateCategory, getProviderById,
 }

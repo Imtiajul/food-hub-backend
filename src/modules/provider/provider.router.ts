@@ -12,6 +12,7 @@ router.get("/category", auth(UserRole.PROVIDER, UserRole.ADMIN), providerControl
 router.patch("/category/:categoryId", auth(UserRole.PROVIDER, UserRole.ADMIN), providerController.updateCategory);
 
 router.get("/", providerController.getProviders);
+router.get("/:providerId", providerController.getProviderById);
 router.post("/",auth(UserRole.PROVIDER), providerController.addProvider);
 
 export const providerRouter = router;

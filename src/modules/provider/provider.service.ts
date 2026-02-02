@@ -16,7 +16,12 @@ const addProvider = async (data: ProviderProfile, userId: string) => {
 }
 const getProviders = async () => {
   const result = await prisma.providerProfile.findMany();
-  console.log(result);
+  // console.log(result);
+  return result
+}
+const getProviderById = async (id:string) => {
+  const result = await prisma.providerProfile.findUniqueOrThrow({where: {id}});
+  // console.log(result);
   return result
 }
 
@@ -62,5 +67,5 @@ const updateCategory = async (categoryId: string, data: Partial<Category>, isPro
   })
 }
 export const providerService = {
-  createMeal, addProvider, createCategory, getProviders, updateCategory, getCategory
+  createMeal, addProvider, createCategory, getProviders, updateCategory, getCategory, getProviderById,
 }
