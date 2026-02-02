@@ -1,0 +1,210 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// 2. Enums
+enum UserRole {
+  CUSTOMER
+  PROVIDER
+  ADMIN
+}
+
+enum OrderStatus {
+  PLACED
+  PREPARING
+  READY
+  DELIVERED
+  CANCELLED
+}
+
+
+model User {
+  id            String   @id
+  name          String
+  email         String
+  emailVerified Boolean  @default(false)
+  image         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  role     String   @default("CUSTOMER")
+  isActive Boolean? @default(true)
+
+  // Relations
+  providerProfile ProviderProfile[] // 1:n relation (only if role is PROVIDER)
+  orders          Order[]          @relation("CustomerOrders") // Orders placed by this user
+  reviews         Review[] // Reviews written by this user
+
+  sessions Session[]
+  accounts Account[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model ProviderProfile {
+  id             String  @id @default(uuid())
+  userId         String  @map("user_id")
+  restaurantName String  @map("restaurant_name") @db.VarChar(100)
+  description    String? @db.Text
+  address        String  @db.Text
+  phone          String? @map("phone_number") @db.VarChar(20)
+  coverImageUrl  String? @map("cover_image_url")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user           User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  meals          Meal[]
+  ordersReceived Order[] @relation("ProviderOrders")
+
+  @@index([restaurantName])
+  @@map("provider_profiles")
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  name      String   @unique @db.VarChar(50)
+  imageUrl  String?  @map("image_url")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  meals Meal[]
+
+  @@index([id])
+  @@map("categories")
+}
+
+model Meal {
+  id          String  @id @default(uuid())
+  providerId  String  @map("provider_id")
+  categoryId  String? @map("category_id")
+  name        String  @db.VarChar(100)
+  description String? @db.Text
+  price       Decimal @db.Decimal(10, 2)
+  imageUrl    String? @map("image_url")
+  isAvailable Boolean @default(true) @map("is_available")
+  isFeatured  Boolean @default(false) @map("is_featured")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  provider   ProviderProfile @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  category   Category?       @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  orderItems OrderItem[]
+  reviews    Review[]
+
+  @@index([name])
+  @@map("meals")
+}
+
+model Order {
+  id              String      @id @default(uuid())
+  customerId      String      @map("customer_id")
+  providerId      String      @map("provider_id")
+  totalAmount     Decimal     @map("total_amount") @db.Decimal(10, 2)
+  status          OrderStatus @default(PLACED)
+  deliveryAddress String      @map("delivery_address") @db.Text
+  paymentMethod   String      @default("COD") @map("payment_method") @db.VarChar(50)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  customer User            @relation("CustomerOrders", fields: [customerId], references: [id], onDelete: Cascade)
+  provider ProviderProfile @relation("ProviderOrders", fields: [providerId], references: [id], onDelete: Cascade)
+  items    OrderItem[]
+
+  @@index([id, customerId])
+  @@map("orders")
+}
+
+model OrderItem {
+  id           String  @id @default(uuid())
+  orderId      String  @map("order_id")
+  mealId       String? @map("meal_id")
+  quantity     Int     @default(1)
+  pricePerUnit Decimal @map("price_per_unit") @db.Decimal(10, 2)
+
+  // Relations
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  meal  Meal? @relation(fields: [mealId], references: [id], onDelete: SetNull)
+
+  @@map("order_items")
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  customerId String   @map("customer_id")
+  mealId     String   @map("meal_id")
+  rating     Int // Validation (1-5) typically handled in app logic or database constraint
+  comment    String?  @db.Text
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  // Relations
+  customer User @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  meal     Meal @relation(fields: [mealId], references: [id], onDelete: Cascade)
+
+  @@map("reviews")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
