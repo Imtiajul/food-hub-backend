@@ -6,6 +6,8 @@ import { providerController } from "./provider.controller";
 const router = express.Router();
 
 router.post("/meals", auth(UserRole.PROVIDER), providerController.createMeal);
+router.post("/category", auth(UserRole.PROVIDER), providerController.createCategory);
+router.get("/", providerController.getProviders);
 router.post("/",auth(UserRole.PROVIDER), providerController.addProvider);
 
 export const providerRouter = router;

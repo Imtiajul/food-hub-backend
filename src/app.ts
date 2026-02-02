@@ -18,7 +18,6 @@ app.use(cors({
 app.all('/api/auth/*splat', toNodeHandler(auth));
 
 app.use("/api/provider", providerRouter);
-// app.use("/comments", commentRouter);
 
 app.get("/", (req, res) => {
     res.send("Hello, World");
