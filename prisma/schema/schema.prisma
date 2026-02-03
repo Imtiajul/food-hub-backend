@@ -89,7 +89,7 @@ model Category {
 
 model Meal {
   id          String  @id @default(uuid())
-  providerId  String  @map("provider_id")
+  providerId  String?  @map("provider_id")
   categoryId  String? @map("category_id")
   name        String  @db.VarChar(100)
   description String? @db.Text
@@ -102,7 +102,7 @@ model Meal {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   // Relations
-  provider   ProviderProfile @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  provider   ProviderProfile? @relation(fields: [providerId], references: [id], onDelete: Cascade)
   category   Category?       @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   orderItems OrderItem[]
   reviews    Review[]

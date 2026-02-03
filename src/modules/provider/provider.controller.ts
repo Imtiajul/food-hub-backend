@@ -53,6 +53,35 @@ const createMeal = async (req: Request, res: Response) => {
         // console.log("error")
     }
 }
+const updateMeal = async (req: Request, res: Response) => {
+    try {
+        const isAdmin = req.user?.role === UserRole.ADMIN;
+        const isProvider = req.user?.role === UserRole.PROVIDER;
+        const { mealId} = req.params;
+        console.log(mealId as string, req.body, isProvider, isAdmin, "provider controler");
+        const result = await providerService.updateMeal(mealId as string, req.body, isProvider, isAdmin);
+        res.status(201).json({ result });
+
+    } catch (error: any) {
+        res.status(400).json({
+            error: "Updating Meal Item is Failed",
+            details: error
+        })
+    }
+}
+const deleteMealById = async(req: Request, res: Response) => {
+    try {
+        const { mealId} = req.params;
+        
+        const result = await providerService.deleteMealById(mealId as string);
+        res.status(201).json({ result });
+    }  catch (error: any) {
+        res.status(400).json({
+            error: "Item deletion unsuccessful. Try Again.",
+            details: error
+        })
+    }
+}
 const createCategory = async (req: Request, res: Response) => {
     try {
         const result = await providerService.createCategory(req.body);
@@ -64,6 +93,8 @@ const createCategory = async (req: Request, res: Response) => {
         })
     }
 }
+
+
 const getCategory = async (req: Request, res: Response) => {
     try {
         const result = await providerService.getCategory();
@@ -71,7 +102,7 @@ const getCategory = async (req: Request, res: Response) => {
 
     } catch (error: any) {
         res.status(400).json({
-            error: "Fetching Category Failed",
+            error: "Fetching Category is Failed",
             details: error
         })
     }
@@ -86,12 +117,12 @@ const updateCategory = async (req: Request, res: Response) => {
 
     } catch (error: any) {
         res.status(400).json({
-            error: "Updating Category Failed",
+            error: "Updating Category is Failed",
             details: error
         })
     }
 }
 
 export const providerController = {
-    createMeal, addProvider, createCategory, getProviders, getCategory, updateCategory, getProviderById,
+    createMeal, addProvider, createCategory, getProviders, getCategory, updateCategory, getProviderById, updateMeal, deleteMealById,
 }
