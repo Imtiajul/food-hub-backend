@@ -28,7 +28,6 @@ enum OrderStatus {
   CANCELLED
 }
 
-
 model User {
   id            String   @id
   name          String
@@ -42,8 +41,8 @@ model User {
   isActive Boolean? @default(true)
 
   // Relations
-  providerProfile ProviderProfile[] // 1:n relation (only if role is PROVIDER)
-  orders          Order[]          @relation("CustomerOrders") // Orders placed by this user
+  providerProfile Provider[] // 1:n relation (only if role is PROVIDER)
+  orders          Order[]    @relation("CustomerOrders") // Orders placed by this user
   reviews         Review[] // Reviews written by this user
 
   sessions Session[]
@@ -53,7 +52,8 @@ model User {
   @@map("user")
 }
 
-model ProviderProfile {
+
+model Provider {
   id             String  @id @default(uuid())
   userId         String  @map("user_id")
   restaurantName String  @map("restaurant_name") @db.VarChar(100)
@@ -65,14 +65,15 @@ model ProviderProfile {
   createdAt DateTime @default(now()) @map("created_at")
 
   // Relations
-  user           User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   meals          Meal[]
   ordersReceived Order[] @relation("ProviderOrders")
 
   @@index([restaurantName])
   @@map("provider_profiles")
 }
+
 
 model Category {
   id        String   @id @default(uuid())
@@ -89,7 +90,7 @@ model Category {
 
 model Meal {
   id          String  @id @default(uuid())
-  providerId  String?  @map("provider_id")
+  providerId  String  @map("provider_id")
   categoryId  String? @map("category_id")
   name        String  @db.VarChar(100)
   description String? @db.Text
@@ -102,12 +103,12 @@ model Meal {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   // Relations
-  provider   ProviderProfile? @relation(fields: [providerId], references: [id], onDelete: Cascade)
-  category   Category?       @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  provider   Provider    @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  category   Category?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   orderItems OrderItem[]
   reviews    Review[]
 
-  @@index([name])
+  @@index([id])
   @@map("meals")
 }
 
@@ -124,8 +125,8 @@ model Order {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   // Relations
-  customer User            @relation("CustomerOrders", fields: [customerId], references: [id], onDelete: Cascade)
-  provider ProviderProfile @relation("ProviderOrders", fields: [providerId], references: [id], onDelete: Cascade)
+  customer User        @relation("CustomerOrders", fields: [customerId], references: [id], onDelete: Cascade)
+  provider Provider    @relation("ProviderOrders", fields: [providerId], references: [id], onDelete: Cascade)
   items    OrderItem[]
 
   @@index([id, customerId])

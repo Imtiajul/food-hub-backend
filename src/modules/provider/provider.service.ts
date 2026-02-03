@@ -1,11 +1,12 @@
-import { Category, Meal, ProviderProfile } from "../../../prisma/generated/prisma/client";
+import { includes } from "better-auth/*";
+import { Category, Meal, Provider } from "../../../prisma/generated/prisma/client";
 import { prisma } from "../../lib/prisma";
 
 
 
-const addProvider = async (data: ProviderProfile, userId: string) => {
+const addProvider = async (data: Provider, userId: string) => {
   //  console.log("Provider Profile");
-  const result = await prisma.providerProfile.create({
+  const result = await prisma.provider.create({
     data: {
       ...data,
       userId,
@@ -15,28 +16,40 @@ const addProvider = async (data: ProviderProfile, userId: string) => {
   return result
 }
 const getProviders = async () => {
-  const result = await prisma.providerProfile.findMany();
+  const result = await prisma.provider.findMany();
   // console.log(result);
   return result
 }
 const getProviderById = async (id: string) => {
-  const result = await prisma.providerProfile.findUniqueOrThrow({ where: { id } });
+  const result = await prisma.provider.findUniqueOrThrow({ where: { id } });
   // console.log(result);
   return result
 }
 
 
-const createMeal = async (data: Omit<Meal, "id" | "createdAt" | "updatedAt">, providerId: string) => {
-  console.log(data);
+const createMeal = async (data: Omit<Meal, "id" | "createdAt" | "updatedAt">, userId: string) => {
+  // console.log(data);
+  // const providerId = await prisma.user.findMany({
+  //   include: {
+  //     providerProfile: {
+  //       select: {
+  //         id: true,
+  //       },
+  //     },
+  //   },
+  // })
+  // console.log(providerId);
+
   const result = await prisma.meal.create({
     data: {
-      ...data,
-      providerId
+      ...data
     }
   })
-  console.log(result)
+  // console.log(result)
   return result;
 }
+
+
 const updateMeal = async (mealId: string, data: Partial<Meal>, isProvider?: boolean, isAdmin?: boolean) => {
   console.log(mealId, data, 'service');
   const mealData = await prisma.meal.findUniqueOrThrow({
@@ -53,13 +66,15 @@ const updateMeal = async (mealId: string, data: Partial<Meal>, isProvider?: bool
     throw new Error("You are not authoriszed to update this meal data!");
   }
 
-  return await prisma.category.update({
+  return await prisma.meal.update({
     where: {
       id: mealData.id,
     },
     data
   })
 }
+
+
 const deleteMealById = async (mealId: string) => {
   const mealData = await prisma.meal.findUnique({
     where: {
@@ -69,10 +84,10 @@ const deleteMealById = async (mealId: string) => {
       id: true
     }
   });
-  if(!mealData?.id) {
+  if (!mealData?.id) {
     throw new Error("Operation failded. Provider Id not found.");
   }
-  return await prisma.meal.delete({where: {id: mealData.id}})  
+  return await prisma.meal.delete({ where: { id: mealData.id } })
 }
 
 const createCategory = async (data: Category) => {
