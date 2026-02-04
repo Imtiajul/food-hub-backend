@@ -74,7 +74,6 @@ const updateMeal = async (mealId: string, data: Partial<Meal>, isProvider?: bool
   })
 }
 
-
 const deleteMealById = async (mealId: string) => {
   const mealData = await prisma.meal.findUnique({
     where: {

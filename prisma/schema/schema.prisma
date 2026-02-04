@@ -117,6 +117,7 @@ model Order {
   customerId      String      @map("customer_id")
   providerId      String      @map("provider_id")
   totalAmount     Decimal     @map("total_amount") @db.Decimal(10, 2)
+
   status          OrderStatus @default(PLACED)
   deliveryAddress String      @map("delivery_address") @db.Text
   paymentMethod   String      @default("COD") @map("payment_method") @db.VarChar(50)
