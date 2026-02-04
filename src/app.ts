@@ -6,6 +6,7 @@ import { auth } from "./lib/auth";
 import { mealRouter } from "./modules/meals/meal.router";
 import { orderRouter } from "./modules/orders/order.router";
 import { adminRouter } from "./modules/admin/admin.router";
+import { meRouter } from "./modules/me/me.router";
 
 // import notFound from "./middleware/notFound";
 const app: Application = express();
@@ -24,6 +25,7 @@ app.use("/api/provider", providerRouter);
 app.use("/api/meals", mealRouter);
 app.use("/api/orders", orderRouter);
 app.use("/api/admin/users", adminRouter);
+app.use("/api/auth/me", meRouter);
 
 app.get("/", (req, res) => {
     res.send("Hello, World");

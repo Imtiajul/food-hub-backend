@@ -8,5 +8,4 @@ const router = express.Router();
 router.get("/", auth(UserRole.ADMIN), adminController.getAllUser);
 router.patch("/:userId", auth(UserRole.ADMIN), adminController.updateUserById);
 
-
-export const adminRouter = router;
+export const adminRouter = router;  
