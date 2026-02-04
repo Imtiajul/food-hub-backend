@@ -5,7 +5,6 @@ const getMyDetails = async (req: Request, res: Response) => {
 
     try {
         const userId = req.user?.id;
-        console.log(userId);
         const result = await meService.getMyDetails(userId as string);
         res.status(200).json({ result });
     } catch (error) {

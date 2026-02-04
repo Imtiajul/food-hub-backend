@@ -18,14 +18,14 @@ app.use(cors({
     credentials: true // to access cookies data
 }))
 
-// app.all('/api/auth/{*any}', toNodeHandler(auth));
-app.all('/api/auth/*splat', toNodeHandler(auth));
+app.use("/api/auth/me", meRouter);
+app.all('/api/auth/{*any}', toNodeHandler(auth));
+// app.all('/api/auth/*splat', toNodeHandler(auth));
 
 app.use("/api/provider", providerRouter);
 app.use("/api/meals", mealRouter);
 app.use("/api/orders", orderRouter);
 app.use("/api/admin/users", adminRouter);
-app.use("/api/auth/me", meRouter);
 
 app.get("/", (req, res) => {
     res.send("Hello, World");
