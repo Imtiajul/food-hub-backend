@@ -6,6 +6,7 @@ import { UserRole } from "../../lib/type";
 const router = express.Router();
 
 router.get("/", auth(UserRole.ADMIN), adminController.getAllUser);
+router.patch("/:userId", auth(UserRole.ADMIN), adminController.updateUserById);
 
 
 export const adminRouter = router;
