@@ -72,7 +72,6 @@ const updateMeal = async (req: Request, res: Response) => {
 const deleteMealById = async(req: Request, res: Response) => {
     try {
         const { mealId} = req.params;
-        
         const result = await providerService.deleteMealById(mealId as string);
         res.status(201).json({ result });
     }  catch (error: any) {

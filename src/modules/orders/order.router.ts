@@ -1,7 +1,7 @@
 import express from "express"
 import auth from "../../middleware/auth";
-import { orderController } from "./order.controller";
 import { UserRole } from "../../lib/type";
+import { orderController } from "./order.controller";
 
 const router = express.Router();
 
