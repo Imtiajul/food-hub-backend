@@ -72,27 +72,26 @@ const getOrderById = async (id: string) => {
     })
 }
 
-const updateStatus = async (id: string, status: OrderStatus, user: string) => {
-    console.log(id, status, user);
-    //checking order if it's ready
-    // if (user === UserRole.CUSTOMER) {
-    //     const orderState = await prisma.order.findUnique({ where: { id }, select:{ status: true} })
-
-    //     if(orderState?.status === OrderStatus.READY) {
-    //         throw new Error("The Order is already Ready. You can't change now.");
-    //     }
-    // }
+const updateOrderStatus = async (id: string, data: Partial<Order>, user: string) => {
+// const updateOrderStatus = async (id: string, status: OrderStatus, user: string) => {
+    // console.log(id, data, user);
+    // checking order if it's ready
+    if (user === UserRole.CUSTOMER) {
+        const orderState = await prisma.order.findUnique({ where: { id }, select:{ status: true} })
+        console.log(orderState);
+        if(orderState?.status === OrderStatus.READY) {
+            throw new Error("The Order is already Ready. You can't change now.");
+        }
+    }
 
     return await prisma.order.update({
         where: {
             id
         },
-        data: {
-            status,
-        }
+        data,
     });
 }
 
 export const orderService = {
-    createOrder, getOrder, getOrderById, updateStatus
+    createOrder, getOrder, getOrderById, updateOrderStatus
 }

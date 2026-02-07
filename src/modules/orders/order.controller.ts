@@ -42,22 +42,23 @@ const getOrderById = async (req: Request, res: Response) => {
     }
 }
 
-const updateOrder = async (req: Request, res: Response) => {
+const updateOrderStatus = async (req: Request, res: Response) => {
     try {
         const { orderId } = req.params;
         // console.log(orderId);
         const user = req.user?.role;
 
-        const result = await orderService.updateStatus(orderId as string, req.body, user as string);
+        const result = await orderService.updateOrderStatus(orderId as string, req.body, user as string);
         res.status(200).json({ result })
-    } catch (error) {
+    } catch (error: any) {
         res.status(400).json({
             error: "Order Updating Failed!",
-            details: error
+            message: error.message,
+            detail: error
         })
     }
 }
 
 export const orderController = {
-    createOrder, getOrder, getOrderById, updateOrder
+    createOrder, getOrder, getOrderById, updateOrderStatus
 }
