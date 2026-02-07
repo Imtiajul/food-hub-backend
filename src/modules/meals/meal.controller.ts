@@ -4,7 +4,10 @@ import paginationSortingHelper from "../../helpers/paginationSortingHelper";
 
 const getAllMeal = async (req: Request, res: Response) => {
     try {
-        const { search } = req.query;
+        const { search, price_min, price_max } = req.query;
+        const PriceMin = price_min ? parseFloat(price_min as string) : 0;
+        const PriceMax = price_max ? parseFloat(price_max as string) : Number.MAX_VALUE;
+
         // console.log(search);
         const isFeatured = req.query.isFeatured
             ? req.query.isFeatured === 'true'
@@ -23,7 +26,7 @@ const getAllMeal = async (req: Request, res: Response) => {
         const { page, limit, skip, sortBy, sortOrder } = paginationSortingHelper(req.query);
         const searchString = typeof search === "string" ? search : undefined;
 
-        const result = await mealService.getAllMeal({search: searchString, categoryId, isAvailable, isFeatured, page, limit, skip, sortBy, sortOrder});
+        const result = await mealService.getAllMeal({ search: searchString, categoryId, isAvailable, isFeatured, PriceMax, PriceMin, page, limit, skip, sortBy, sortOrder });
 
         res.status(200).json(result);
     } catch (error) {

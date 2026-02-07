@@ -2,11 +2,13 @@ import { Meal } from "../../../prisma/generated/prisma/client";
 import { MealWhereInput } from "../../../prisma/generated/prisma/models";
 import { prisma } from "../../lib/prisma"
 
-const getAllMeal = async ({ search, categoryId, isAvailable, isFeatured, page, limit, skip, sortBy, sortOrder }: {
+const getAllMeal = async ({ search, categoryId, isAvailable, isFeatured, PriceMax, PriceMin, page, limit, skip, sortBy, sortOrder }: {
     search: string | undefined,
     categoryId: string | undefined,
     isAvailable: boolean | undefined,
     isFeatured: boolean | undefined,
+    PriceMax: number | undefined,
+    PriceMin: number | undefined,
     page: number,
     limit: number,
     skip: number,
@@ -34,8 +36,34 @@ const getAllMeal = async ({ search, categoryId, isAvailable, isFeatured, page, l
             ]
         })
     }
-    if(categoryId) {
-        andConditions.push({categoryId})
+    // console.log(PriceMin, PriceMax);
+    if (PriceMin) {
+        andConditions.push({
+            OR: [
+                {
+                    price: {
+                        gte: PriceMin,
+                    }
+                }
+            ]
+        }
+        )
+    }
+    if (PriceMax) {
+        andConditions.push({
+            OR: [
+                {
+                    price: {
+                        lte: PriceMax,
+                    }
+                }
+            ]
+        }
+        )
+    }
+
+    if (categoryId) {
+        andConditions.push({ categoryId })
     }
 
     if (typeof isAvailable === "boolean") {
