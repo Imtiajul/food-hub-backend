@@ -7,6 +7,7 @@ import { mealRouter } from "./modules/meals/meal.router";
 import { orderRouter } from "./modules/orders/order.router";
 import { adminRouter } from "./modules/admin/admin.router";
 import { meRouter } from "./modules/me/me.router";
+import { reviewRouter } from "./modules/review/review.router";
 
 // import notFound from "./middleware/notFound";
 const app: Application = express();
@@ -25,6 +26,7 @@ app.all('/api/auth/{*any}', toNodeHandler(auth));
 app.use("/api/provider", providerRouter);
 app.use("/api/meals", mealRouter);
 app.use("/api/orders", orderRouter);
+app.use("/api/review", reviewRouter);
 app.use("/api/admin/users", adminRouter);
 
 app.get("/", (req, res) => {
