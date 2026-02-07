@@ -20,7 +20,12 @@ const getProviders = async () => {
   return result
 }
 const getProviderById = async (id: string) => {
-  const result = await prisma.provider.findUniqueOrThrow({ where: { id } });
+  const result = await prisma.provider.findUniqueOrThrow({ 
+    where: { id },
+    include: {
+      meals: true
+    }
+  });
   // console.log(result);
   return result
 }
