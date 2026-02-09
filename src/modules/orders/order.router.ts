@@ -10,5 +10,8 @@ router.get('/', auth(UserRole.CUSTOMER, UserRole.PROVIDER, UserRole.ADMIN), orde
 router.get('/:orderId', auth(UserRole.CUSTOMER, UserRole.PROVIDER, UserRole.ADMIN), orderController.getOrderById);
 router.patch('/:orderId', auth(UserRole.CUSTOMER, UserRole.PROVIDER, UserRole.ADMIN), orderController.updateOrderStatus);
 
+router.post('/item/:orderId', auth(UserRole.CUSTOMER), orderController.addOrderItem);
+
+
 
 export const orderRouter = router;

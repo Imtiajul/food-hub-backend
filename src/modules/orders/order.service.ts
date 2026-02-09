@@ -1,5 +1,5 @@
 import { error } from "node:console";
-import { Order, OrderStatus } from "../../../prisma/generated/prisma/client";
+import { Order, OrderItem, OrderStatus } from "../../../prisma/generated/prisma/client";
 import { prisma } from "../../lib/prisma";
 import { UserRole } from "../../lib/type";
 import { stat } from "node:fs";
@@ -92,6 +92,15 @@ const updateOrderStatus = async (id: string, data: Partial<Order>, user: string)
     });
 }
 
+const addOrderItem = async(orderId: string, data:OrderItem) => {
+     return await prisma.orderItem.create({
+        data: {
+            ...data,
+            orderId
+        }
+    })
+}
+
 export const orderService = {
-    createOrder, getOrder, getOrderById, updateOrderStatus
+    createOrder, getOrder, getOrderById, updateOrderStatus, addOrderItem
 }

@@ -59,6 +59,23 @@ const updateOrderStatus = async (req: Request, res: Response) => {
     }
 }
 
+const addOrderItem = async (req: Request, res: Response) => {
+    try {
+        const {orderId} = req.params;
+        // console.log(userId);
+        const result = await orderService.addOrderItem(orderId as string, req.body);
+        res.status(200).json({ result })
+    } catch (error: any) {
+        res.status(400).json({
+            error: "Order Item Creation Failed!",
+            details: error
+        })
+        // console.log("error")
+    }
+
+}
+
+
 export const orderController = {
-    createOrder, getOrder, getOrderById, updateOrderStatus
+    createOrder, getOrder, getOrderById, updateOrderStatus, addOrderItem
 }
